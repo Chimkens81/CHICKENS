@@ -1,0 +1,8 @@
+body {
+    cursor: url(assets/Chimken.png), auto !important;
+    background-image: url(assets/Chimken.png);
+}
+
+.test {
+    cursor: url("assets/Chimken.png"), auto;
+}
