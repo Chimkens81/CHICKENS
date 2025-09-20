@@ -1,8 +1,9 @@
 body {
-    cursor: url(assets/Chimken.png), auto !important;
-    background-image: url(assets/Chimken.png);
+    /* cursor: url(assets/Chimken_32x32.png), auto !important; */
+    background-image: url(assets/Chimken-removebg-preview.png);
+    background-repeat: no-repeat;
 }
 
 .test {
-    cursor: url("assets/Chimken.png"), auto;
+    cursor: url(assets/Chimken-removebg_60x34.png), auto;
 }
