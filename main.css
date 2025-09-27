@@ -6,5 +6,6 @@ body {
 }
 
 .test {
+    pointer-events: auto;
     cursor: url(assets/Chimken-removebg_128x76.png), auto;
 }

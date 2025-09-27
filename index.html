@@ -2,8 +2,18 @@
 <head>
     <link href="main.css" rel="stylesheet">
 </head>
-<body class="test">
+<!-- <body class="test"> -->
+<body class="test" onload="document.getElementById('startupDialog').showModal()">
     <h1 class="test"> Chickens </h1>
+    <dialog id="startupDialog">
+        <form method="dialog">
+        <p class="title">Welcome to Chicken Park</p>
+        <div>
+            <button>Ok</button>
+            <button type="button" onclick="goneClosed()">Close</button>
+        </div>
+        </form>
+    </dialog>
     <script src="main.js"></script>
 </body>
 </html>
