@@ -3,9 +3,25 @@ body {
     background-image: url(assets/Chimken-removebg-preview.png);
     background-repeat: no-repeat;
     background-size: cover;
+    cursor: none;
+    overflow: hidden;
+    margin: 0;
 }
 
-.test {
+.test { 
     pointer-events: auto;
-    cursor: url(assets/Chimken-removebg_128x76.png), auto;
+    cursor: url(assets/Chimken-removebg_128x76.png) 64 38, auto !important;
 }
+
+#cursorImage {
+    position:fixed;
+    width: 64px;
+    height: 64px;
+    pointer-events: none;
+    transform:translate(-100%,-70%);
+    display: none;
+    z-index: 999;
+}
+/* .my-button:hover {
+    cursor: url(assets/Chimken-removebg_128x76.png) 64 38, auto !important 
+} */
