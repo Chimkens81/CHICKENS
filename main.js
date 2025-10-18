@@ -8,3 +8,8 @@ document.addEventListener("mousemove",(event)=> {
     cursorImage.style.top='${event.clientY}px';
 }
 )
+// var c = document.getElementById("myGameCanvas");
+// var ctx = c.getContext("2d");
+// ctx.moveTo(0, 0);
+// ctx.lineTo(200, 100);
+// ctx.stroke();

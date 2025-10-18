@@ -17,10 +17,14 @@ body {
     position:fixed;
     width: 64px;
     height: 64px;
-    pointer-events: none;
+    pointer-events: auto;
     transform:translate(-100%,-70%);
     display: none;
     z-index: 999;
+}
+.cursorButton{
+    pointer-events: auto;
+    cursor: url(assets/chicken-foot-claws-vector-sketch-isolated-chicken-foot-claws-vector-sketch-isolated-black-110325325-removebg-preview.png) 0 0, auto !important;
 }
 /* .my-button:hover {
     cursor: url(assets/Chimken-removebg_128x76.png) 64 38, auto !important 
