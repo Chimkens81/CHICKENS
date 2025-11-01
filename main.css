@@ -1,12 +1,12 @@
-body {
+/* body {
     /* cursor: url(assets/Chimken_32x32.png), auto !important; */
-    background-image: url(assets/Chimken-removebg-preview.png);
+    /* background-image: url(assets/Chimken-removebg-preview.png);
     background-repeat: no-repeat;
     background-size: cover;
     cursor: none;
     overflow: hidden;
     margin: 0;
-}
+} */
 
 .test { 
     pointer-events: auto;

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <link href="main.css" rel="stylesheet">
@@ -14,21 +15,11 @@
         </div>
         </form>
     </dialog>
-    <canvas id="myGameCanvas" width="500" height="250" style="border:1px solid #000000;">
+    <canvas id="myGameCanvas" style="border:1px solid #000000;">
     </canvas>
 </body>
 <body>
     <img id="cursorImage" src="assets/Chimken-removebg_128x76.png" alt="cursorPng">
-    <script scr="main.js"></script>
-</body>
+    <script src="main.js"></script>
 </body>
 </html>
-<script>
-var c = document.getElementById("myGameCanvas");
-var ctx = c.getContext("2d");
-ctx.moveTo(0, 0);
-ctx.lineTo(200, 100);
-ctx.stroke();
-var img = document.getElementById("cursorImage");
-ctx.drawImage(img,10,10);
-</script>
