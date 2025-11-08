@@ -9,10 +9,11 @@ document.addEventListener("mousemove",(event)=> {
 })
 
 var c = document.getElementById("myGameCanvas");
+var header = document.getElementById("header");
 var ctx = c.getContext("2d");
 function resizeCanvas() {
-    c.width=window.outerWidth;
-    c.height=window.outerHeight;
+    c.width=window.outerWidth - 50;
+    c.height=window.outerHeight - 130;
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
@@ -20,8 +21,9 @@ window.addEventListener("resize", resizeCanvas)
 let player = {
     x: c.width / 2,
     y: c.height / 2,
-    size: 200,
-    speed: 50,
+    sizex: 200,
+    sizey: 120,
+    speed: 15,
     movingUp: false,
     movingDown: false,
     movingLeft: false,
@@ -33,10 +35,43 @@ document.addEventListener("keydown", (e) => {
     {
         player.movingUp = true
     }
+    if(e.code === "ArrowDown" || e.code === "KeyS")
+    {
+        player.movingDown = true
+    }
+    if(e.code === "ArrowLeft" || e.code === "KeyA")
+    {
+        player.movingLeft = true
+    }
+    if(e.code === "ArrowRight" || e.code === "KeyD")
+    {
+        player.movingRight = true
+    }
 });
 
+document.addEventListener("keyup", (e) => {
+    if(e.code === "ArrowUp" || e.code === "KeyW")
+    {
+        player.movingUp = false
+    }
+    if(e.code === "ArrowDown" || e.code === "KeyS")
+    {
+        player.movingDown = false
+    }
+    if(e.code === "ArrowLeft" || e.code === "KeyA")
+    {
+        player.movingLeft = false
+    }
+    if(e.code === "ArrowRight" || e.code === "KeyD")
+    {
+        player.movingRight = false
+    }
+});
+
+
+
 const playerImg = new Image();
-playerImg.src = "assets/Chimken-removebg_128x76.png";
+playerImg.src = "assets/Chimken-remove.bg_250x120.png";
 
 function gameLoop()
 {
@@ -45,7 +80,20 @@ function gameLoop()
     {
         player.y -= player.speed;
     }
-    ctx.drawImage(playerImg, player.x, player.y, player.size, player.size);
+    if(player.movingDown)
+    {
+        player.y += player.speed;
+    }
+    if(player.movingLeft)
+    {
+        player.x -= player.speed;
+    }
+    if(player.movingRight)
+    {
+        player.x += player.speed;
+    }
+    ctx.drawImage(playerImg, player.x, player.y, player.sizex, player.sizey);
+    requestAnimationFrame(gameLoop)
 }
 
-gameLoop();
+requestAnimationFrame(gameLoop)
