@@ -12,8 +12,14 @@ var c = document.getElementById("myGameCanvas");
 var header = document.getElementById("header");
 var ctx = c.getContext("2d");
 function resizeCanvas() {
-    c.width=window.outerWidth - 50;
-    c.height=window.outerHeight - 130;
+    const headerHeight = header.offsetHeight;
+
+    c.width = window.innerWidth * 0.95;
+    c.height = (window.innerHeight - headerHeight) * 0.95;
+
+    c.style.width = window.innerWidth + "px";
+    c.style.height = (window.innerHeight - headerHeight) + "px";
+
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
@@ -76,9 +82,15 @@ playerImg.src = "assets/Chimken-remove.bg_250x120.png";
 function gameLoop()
 {
     ctx.clearRect(0,0,c.width, c.height);
+    console.log("player x:" + player.x, "player y:" + player.y)
+    console.log(c.width, c.height)
     if(player.movingUp)
     {
         player.y -= player.speed;
+        if(player.y >= c.height)
+        {
+            player.y -= player.speed;
+        }
     }
     if(player.movingDown)
     {

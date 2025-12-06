@@ -8,6 +8,17 @@
     margin: 0;
 } */
 
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    width: 95vw;
+    height: 95vh;
+}
+
 .test { 
     pointer-events: auto;
     cursor: url(assets/Chimken-removebg_128x76.png) 64 38, auto !important;
