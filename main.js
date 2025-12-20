@@ -24,6 +24,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
 
+
 let player = {
     x: c.width / 2,
     y: c.height / 2,
@@ -73,6 +74,23 @@ document.addEventListener("keyup", (e) => {
         player.movingRight = false
     }
 });
+
+function getColorAtCharacter(charX, charY, ctx) {
+    const pixelData = ctx.getImageData(charX, charY, 1, 1).data;
+    return {
+        r: pixelData[0],
+        g: pixelData[1],
+        b: pixelData[2],
+        a: pixelData[3] / 255 // Normalize alpha to 0-1 range
+    };
+}
+
+// Example usage in your game loop
+const touchedColor = getColorAtCharacter(player.x, player.y, ctx);
+if (touchedColor.r > 254 && touchedColor.g < 1 && touchedColor.b < 1 && touchedColor.a > 254) {
+    console.log("Character is touching a shade of red.");
+}
+
 
 
 
