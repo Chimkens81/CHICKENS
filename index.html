@@ -2,22 +2,25 @@
 <html>
 <head>
     <link href="main.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Chicken Park</title>
 </head>
 <!-- <body class="test"> -->
 <body class="test" onload="document.getElementById('startupDialog').showModal()">
     <dialog id="startupDialog">
         <form method="dialog">
-        <p class="title">Welcome to Chicken Park</p>
         <div>
-            <button class="cursorButton">Ok</button>
+            <button class="cursorButton" type="button" onclick="goneClosed()">Ok</button>
             <button class="cursorButton" type="button" onclick="goneClosed()">Close</button>
         </div>
         </form>
     </dialog>
-    <header id="header">Chicken</header>
-    <canvas id="myGameCanvas" style="border:2px solid #ff0000;">
-    </canvas>
-    <img id="cursorImage" src="assets/Chimken-removebg_128x76.png" alt="cursorPng">
+
+    <div id="title" class="title">Chicken Park</div>
+    <div id="gameContainer" class="game-container hidden">
+        <div id ="chicken" class="chicken"></div>
+    </div>
+    <img id="cursorImage" src="assets/chicken-foot-claws-vector-sketch-isolated-chicken-foot-claws-vector-sketch-isolated-black-110325325-removebg-preview.png" alt="cursorPng">
     <script src="main.js"></script>
 </body>
 </html>
