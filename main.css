@@ -42,7 +42,7 @@ body {
     height: 80px;
     background-image: url(assets/Chimken-removebg_128x76.png);
     background-size: cover;
-    background-position: center;
+    background-position: bottom center;
     z-index: 10;
     left: 0;
     top: 0;
@@ -51,6 +51,13 @@ body {
 .test { 
     pointer-events: auto;
     cursor: url(assets/chicken-foot-claws-vector-sketch-isolated-chicken-foot-claws-vector-sketch-isolated-black-110325325-removebg-preview.png) 0 0, auto !important;
+}
+
+.platform {
+    position: absolute;
+    background-color: brown;
+    border: 2px solid #654321;
+    border-radius: 5px;
 }
 
 #cursorImage {
