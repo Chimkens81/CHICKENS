@@ -18,7 +18,7 @@ let chickenY = 0;
 let prevChickenY = 0;
 const speed = 5;
 const jumpPower = 15;
-const gravity = 1;
+const gravity = -1;
 const maxFallSpeed = 10;
 let moveSpeedX = 0;
 let moveSpeedY = 0;
@@ -27,16 +27,23 @@ let chickenSizeY = 0;
 const footOffset = 11; // pixels of transparent padding at sprite bottom to ignore when aligning feet
 const keys = {};
 
+let cameraX = 0;
+const WORLD_WIDTH = 2000; // width of the game world in pixels
+
 const platforms = [
     { x: 100, y: 300, width: 200, height: 20 },
     { x: 400, y: 200, width: 150, height: 20 },
-    { x: 700, y: 350, width: 250, height: 20 }
+    { x: 700, y: 350, width: 250, height: 20 },
+    { x: 1100, y: 250, width: 200, height: 20 },
+    { x: 1500, y: 300, width: 200, height: 20 },
+    { x: 1700, y: 450, width: 200, height: 20 },
+    { x: 1900, y: 50, width: 500, height: 20 },
 ];
 
 document.addEventListener("keydown", function(event) {
     keys[event.key.toLowerCase()] = true;
     if((event.key === ' ' || event.key.toLowerCase() === 'w' || event.key.toLowerCase() === 'arrowup') && isOnGround()) {
-        moveSpeedY = -jumpPower;
+        moveSpeedY = jumpPower;
     }
 });
 
@@ -46,8 +53,8 @@ document.addEventListener("keyup", function(event) {
 
 function initializeGame()
 {
-    chickenX = 100;
-    chickenY = 100;
+    chickenX = 150;
+    chickenY = 350;
     chickenSizeX = chicken.offsetWidth;
     chickenSizeY = chicken.offsetHeight;
 
@@ -55,10 +62,11 @@ function initializeGame()
         const platformElement = document.createElement('div');
         platformElement.classList.add('platform');
         platformElement.style.left = platform.x + 'px';
-        platformElement.style.top = platform.y + 'px';
+        platformElement.style.top = (gameContainer.clientHeight - platform.y - platform.height) + 'px';
         platformElement.style.width = platform.width + 'px';
         platformElement.style.height = platform.height + 'px';
         gameContainer.appendChild(platformElement);
+        platform.element = platformElement;
     }); 
 }
 
@@ -68,7 +76,7 @@ function isOnGround() {
             chickenX < platform.x + platform.width &&
             chickenY + chickenSizeY - footOffset >= platform.y - 8 &&
             chickenY + chickenSizeY - footOffset <= platform.y + 8 &&
-            moveSpeedY >= 0)
+            moveSpeedY <= 0)
             return true;
         }
     return false;
@@ -85,7 +93,7 @@ function getPlatformBelow() {
             chickenX < platform.x + platform.width &&
             chickenY + chickenSizeY - footOffset >= platform.y - 8 &&
             chickenY + chickenSizeY - footOffset <= platform.y + 8 &&
-            moveSpeedY >= 0) {
+            moveSpeedY <= 0) {
             return platform;
         }
     }
@@ -102,8 +110,8 @@ function updatePlayer() {
     chickenX += moveSpeedX;
     
     moveSpeedY += gravity;
-    if (moveSpeedY > maxFallSpeed) {
-        moveSpeedY = maxFallSpeed;
+    if (moveSpeedY < -maxFallSpeed) {
+        moveSpeedY = -maxFallSpeed;
     }
     
     // track previous Y to do a vertical sweep (prevents tunneling through platforms)
@@ -111,7 +119,7 @@ function updatePlayer() {
 
     chickenY += moveSpeedY;
 
-    if (moveSpeedY > 0) { // only sweep when falling
+    if (moveSpeedY < 0) { // only sweep when falling
         const prevBottom = prevChickenY + chickenSizeY - footOffset;
         const newBottom = chickenY + chickenSizeY - footOffset;
         let hitPlatform = null;
@@ -130,13 +138,13 @@ function updatePlayer() {
         }
 
         if (hitPlatform) {
-            chickenY = hitPlatform.y - chickenSizeY + footOffset;
+            chickenY = hitPlatform.y - footOffset;
             moveSpeedY = 0;
         } else {
             // fallback to original check (handles small movements)
             const platformBelow = getPlatformBelow();
             if (platformBelow) {
-                chickenY = platformBelow.y - chickenSizeY + footOffset;
+                chickenY = platformBelow.y - footOffset;
                 moveSpeedY = 0;
             }
         }
@@ -144,25 +152,46 @@ function updatePlayer() {
         // when not falling, keep normal detection
         const platformBelow = getPlatformBelow();
         if (platformBelow) {
-            chickenY = platformBelow.y - chickenSizeY + footOffset;
+            chickenY = platformBelow.y - footOffset;
             moveSpeedY = 0;
         }
     }
-    if (chickenX < 0) chickenX = 0;
-    if (chickenX > gameContainer.clientWidth - chickenSizeX) chickenX = gameContainer.clientWidth - chickenSizeX;
+    if(chickenX < 0) chickenX = 0;
+    if(chickenX > WORLD_WIDTH - chickenSizeX) chickenX = WORLD_WIDTH - chickenSizeX;
 
-    if(chickenY > 600)
+    updateCamera();
+
+    const containerHeight = gameContainer.clientHeight;
+    if(chickenY < 0)
     {
         resetPlayerPosition();
     }
 
-    chicken.style.left = chickenX + 'px';
-    chicken.style.top = chickenY + 'px';
+    chicken.style.left = (chickenX - cameraX) + 'px';
+    chicken.style.top = (containerHeight - chickenY - chickenSizeY) + 'px';
+}
+function updateCamera() {
+    const containerWidth = gameContainer.clientWidth;
+    const containerHeight = gameContainer.clientHeight;
+
+    cameraX = chickenX - containerWidth / 2 + chickenSizeX / 2;
+
+    if  (cameraX < 0) cameraX = 0;
+    if (cameraX > WORLD_WIDTH - containerWidth) {
+        cameraX = WORLD_WIDTH - containerWidth;
+    }
+
+    platforms.forEach(platform => {
+        if (platform.element) {
+            platform.element.style.left = (platform.x - cameraX) + 'px';
+            platform.element.style.top = (containerHeight - platform.y - platform.height) + 'px';
+        }
+    });
 }
 
 function resetPlayerPosition() {
-    chickenX = 100;
-    chickenY = 100;
+    chickenX = 150;
+    chickenY = 350;
     moveSpeedY = 0;
 }
 
