@@ -3,217 +3,195 @@ async function goneClosed() {
     document.getElementById('startupDialog').close()
     document.getElementById('gameContainer').classList.remove('hidden')
     initializeGame()
+    gameLoop()
 }
-const cursorImage=document.getElementById("cursorImage");
-document.addEventListener("mousemove",(event)=> {   
-    cursorImage.style.left=`${event.clientX}px`;
-    cursorImage.style.top=`${event.clientY}px`;
+
+const cursorImage = document.getElementById("cursorImage");
+document.addEventListener("mousemove", (event) => {   
+    cursorImage.style.left = `${event.clientX}px`;
+    cursorImage.style.top = `${event.clientY}px`;
 })
 
+// Get elements
 const gameContainer = document.getElementById("gameContainer");
 const chicken = document.getElementById("chicken");
 
-let chickenX = 0;
-let chickenY = 0;
-let prevChickenY = 0;
-const speed = 5;
-const jumpPower = 15;
-const gravity = -1;
-const maxFallSpeed = 10;
+// Player physics
+let chickenX = 100;
+let chickenY = 400;
 let moveSpeedX = 0;
 let moveSpeedY = 0;
 let chickenSizeX = 0;
 let chickenSizeY = 0;
-const footOffset = 11; // pixels of transparent padding at sprite bottom to ignore when aligning feet
-const keys = {};
 
+const moveSpeed = 5;
+const jumpPower = 15;
+const gravity = 0.6;
+const maxFallSpeed = 15;
+
+// Camera/scroll
 let cameraX = 0;
-const WORLD_WIDTH = 2000; // width of the game world in pixels
+const WORLD_WIDTH = 3000; // Total world size
 
+// Platforms array
 const platforms = [
-    { x: 100, y: 300, width: 200, height: 20 },
-    { x: 400, y: 200, width: 150, height: 20 },
-    { x: 700, y: 350, width: 250, height: 20 },
-    { x: 1100, y: 250, width: 200, height: 20 },
-    { x: 1500, y: 300, width: 200, height: 20 },
-    { x: 1700, y: 450, width: 200, height: 20 },
-    { x: 1900, y: 50, width: 500, height: 20 },
+    { x: 0, y: 500, width: 400, height: 20 },      // Ground platform
+    { x: 500, y: 450, width: 200, height: 20 },    // Platform 1
+    { x: 800, y: 380, width: 200, height: 20 },    // Platform 2
+    { x: 1100, y: 450, width: 200, height: 20 },   // Platform 3
+    { x: 1400, y: 350, width: 200, height: 20 },   // Platform 4
+    { x: 1700, y: 420, width: 250, height: 20 },   // Platform 5
+    { x: 2050, y: 350, width: 200, height: 20 },   // Platform 6
+    { x: 2350, y: 450, width: 300, height: 20 },   // Platform 7
+    { x: 2750, y: 500, width: 250, height: 20 }    // End platform
 ];
 
-document.addEventListener("keydown", function(event) {
+// Keyboard state
+const keys = {};
+
+// Initialize game
+function initializeGame() {
+    // Set player starting position
+    chickenX = 100;
+    chickenY = 400;
+    
+    // Get chicken dimensions
+    chickenSizeX = chicken.offsetWidth;
+    chickenSizeY = chicken.offsetHeight;
+    
+    // Create platform elements
+    platforms.forEach(platform => {
+        const platformElement = document.createElement('div');
+        platformElement.className = 'platform';
+        platformElement.style.width = platform.width + 'px';
+        platformElement.style.height = platform.height + 'px';
+        platformElement.style.left = platform.x + 'px';
+        platformElement.style.bottom = (gameContainer.clientHeight - platform.y - platform.height) + 'px';
+        gameContainer.appendChild(platformElement);
+        platform.element = platformElement;
+    });
+}
+
+// Keyboard input
+document.addEventListener('keydown', function(event) {
     keys[event.key.toLowerCase()] = true;
-    if((event.key === ' ' || event.key.toLowerCase() === 'w' || event.key.toLowerCase() === 'arrowup') && isOnGround()) {
-        moveSpeedY = jumpPower;
+    
+    // Jump with spacebar or W
+    if ((event.key === ' ' || event.key.toLowerCase() === 'w') && isOnGround()) {
+        moveSpeedY = -jumpPower;
     }
 });
 
-document.addEventListener("keyup", function(event) {
+document.addEventListener('keyup', function(event) {
     keys[event.key.toLowerCase()] = false;
 });
 
-function initializeGame()
-{
-    chickenX = 150;
-    chickenY = 350;
-    chickenSizeX = chicken.offsetWidth;
-    chickenSizeY = chicken.offsetHeight;
-
-    platforms.forEach(platform => {
-        const platformElement = document.createElement('div');
-        platformElement.classList.add('platform');
-        platformElement.style.left = platform.x + 'px';
-        platformElement.style.top = (gameContainer.clientHeight - platform.y - platform.height) + 'px';
-        platformElement.style.width = platform.width + 'px';
-        platformElement.style.height = platform.height + 'px';
-        gameContainer.appendChild(platformElement);
-        platform.element = platformElement;
-    }); 
-}
-
+// Check if player is on ground/platform
 function isOnGround() {
-    for(let platform of platforms) {
-        if(chickenX + chickenSizeX > platform.x &&
+    // Check each platform
+    for (let platform of platforms) {
+        if (chickenX + chickenSizeX > platform.x &&
             chickenX < platform.x + platform.width &&
-            chickenY + chickenSizeY - footOffset >= platform.y - 8 &&
-            chickenY + chickenSizeY - footOffset <= platform.y + 8 &&
-            moveSpeedY <= 0)
+            chickenY + chickenSizeY >= platform.y - 5 &&
+            chickenY + chickenSizeY <= platform.y + 5 &&
+            moveSpeedY >= 0) {
             return true;
         }
+    }
     return false;
 }
-function gameLoop() {
-    updatePlayer()
 
-    animationFrame = requestAnimationFrame(gameLoop);
-}
-
+// Get platform player is standing on
 function getPlatformBelow() {
     for (let platform of platforms) {
         if (chickenX + chickenSizeX > platform.x &&
             chickenX < platform.x + platform.width &&
-            chickenY + chickenSizeY - footOffset >= platform.y - 8 &&
-            chickenY + chickenSizeY - footOffset <= platform.y + 8 &&
-            moveSpeedY <= 0) {
+            chickenY + chickenSizeY >= platform.y - 5 &&
+            chickenY + chickenSizeY <= platform.y + 10 &&
+            moveSpeedY >= 0) {
             return platform;
         }
     }
     return null;
 }
+
+// Update player physics
 function updatePlayer() {
+    // Horizontal movement
     moveSpeedX = 0;
     if (keys['a'] || keys['arrowleft']) {
-        moveSpeedX = -speed;
+        moveSpeedX = -moveSpeed;
     }
     if (keys['d'] || keys['arrowright']) {
-        moveSpeedX = speed;
+        moveSpeedX = moveSpeed;
     }
+    
+    // Apply horizontal movement
     chickenX += moveSpeedX;
     
+    // Apply gravity
     moveSpeedY += gravity;
-    if (moveSpeedY < -maxFallSpeed) {
-        moveSpeedY = -maxFallSpeed;
+    if (moveSpeedY > maxFallSpeed) {
+        moveSpeedY = maxFallSpeed;
     }
     
-    // track previous Y to do a vertical sweep (prevents tunneling through platforms)
-    prevChickenY = chickenY;
-
+    // Apply vertical movement
     chickenY += moveSpeedY;
-
-    if (moveSpeedY < 0) { // only sweep when falling
-        const prevBottom = prevChickenY + chickenSizeY - footOffset;
-        const newBottom = chickenY + chickenSizeY - footOffset;
-        let hitPlatform = null;
-        let closestY = Infinity;
-
-        for (let platform of platforms) {
-            if (chickenX + chickenSizeX > platform.x &&
-                chickenX < platform.x + platform.width) {
-                if (platform.y >= prevBottom - 1 && platform.y <= newBottom + 1) {
-                    if (platform.y < closestY) {
-                        closestY = platform.y;
-                        hitPlatform = platform;
-                    }
-                }
-            }
-        }
-
-        if (hitPlatform) {
-            chickenY = hitPlatform.y - footOffset;
-            moveSpeedY = 0;
-        } else {
-            // fallback to original check (handles small movements)
-            const platformBelow = getPlatformBelow();
-            if (platformBelow) {
-                chickenY = platformBelow.y - footOffset;
-                moveSpeedY = 0;
-            }
-        }
-    } else {
-        // when not falling, keep normal detection
-        const platformBelow = getPlatformBelow();
-        if (platformBelow) {
-            chickenY = platformBelow.y - footOffset;
-            moveSpeedY = 0;
-        }
+    
+    // Platform collision
+    const platformBelow = getPlatformBelow();
+    if (platformBelow) {
+        chickenY = platformBelow.y - chickenSizeY;
+        moveSpeedY = 0;
     }
-    if(chickenX < 0) chickenX = 0;
-    if(chickenX > WORLD_WIDTH - chickenSizeX) chickenX = WORLD_WIDTH - chickenSizeX;
-
-    updateCamera();
-
-    const containerHeight = gameContainer.clientHeight;
-    if(chickenY < 0)
-    {
+    
+    // Keep player in world bounds
+    if (chickenX < 0) chickenX = 0;
+    if (chickenX > WORLD_WIDTH - chickenSizeX) chickenX = WORLD_WIDTH - chickenSizeX;
+    
+    // Fall death
+    if (chickenY > gameContainer.clientHeight) {
         resetPlayerPosition();
     }
-
+    
+    // Update camera to follow player
+    updateCamera();
+    
+    // Update player element position
     chicken.style.left = (chickenX - cameraX) + 'px';
-    chicken.style.top = (containerHeight - chickenY - chickenSizeY) + 'px';
+    chicken.style.bottom = (gameContainer.clientHeight - chickenY - chickenSizeY) + 'px';
 }
+
+// Update camera to follow player
 function updateCamera() {
     const containerWidth = gameContainer.clientWidth;
-    const containerHeight = gameContainer.clientHeight;
-
+    
+    // Keep player centered when possible
     cameraX = chickenX - containerWidth / 2 + chickenSizeX / 2;
-
-    if  (cameraX < 0) cameraX = 0;
+    
+    // Clamp camera to world bounds
+    if (cameraX < 0) cameraX = 0;
     if (cameraX > WORLD_WIDTH - containerWidth) {
         cameraX = WORLD_WIDTH - containerWidth;
     }
-
+    
+    // Update all platforms relative to camera
     platforms.forEach(platform => {
-        if (platform.element) {
-            platform.element.style.left = (platform.x - cameraX) + 'px';
-            platform.element.style.top = (containerHeight - platform.y - platform.height) + 'px';
-        }
+        platform.element.style.left = (platform.x - cameraX) + 'px';
     });
 }
 
+// Reset player position
 function resetPlayerPosition() {
-    chickenX = 150;
-    chickenY = 350;
+    chickenX = 100;
+    chickenY = 400;
     moveSpeedY = 0;
+    moveSpeedX = 0;
 }
 
-document.addEventListener("keydown", function(event) {
-    const key = event.key.toLowerCase();
-    keys[key] = true;
-});
-
-document.addEventListener("keyup", function(event) {
-    const key = event.key.toLowerCase();
-    keys[key] = false;
-});
-
-gameLoop();
-
-window.addEventListener('resize', () => {
-    if(!gameContainer.classList.contains('hidden')) {
-        const maxX = gameContainer.clientWidth - chickenSizeX;
-        const maxY = gameContainer.clientHeight - chickenSizeY;
-        chickenX = Math.min(chickenX, maxX);
-        chickenY = Math.min(chickenY, maxY);
-        chicken.style.left = chickenX + 'px';
-        chicken.style.top = chickenY + 'px';
-    }
-});
+// Game loop
+function gameLoop() {
+    updatePlayer();
+    
+    let animationFrame = requestAnimationFrame(gameLoop);
+}

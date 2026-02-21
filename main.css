@@ -42,10 +42,8 @@ body {
     height: 80px;
     background-image: url(assets/Chimken-removebg_128x76.png);
     background-size: cover;
-    background-position: bottom center;
+    background-position: center;
     z-index: 10;
-    left: 0;
-    top: 0;
 }
 
 .test { 
