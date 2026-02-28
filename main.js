@@ -15,6 +15,10 @@ document.addEventListener("mousemove", (event) => {
 // Get elements
 const gameContainer = document.getElementById("gameContainer");
 const chicken = document.getElementById("chicken");
+const livesElement = document.getElementById('lives')
+
+let lives = 5;
+let animationFrame;
 
 // Player physics
 let chickenX = 100;
@@ -25,7 +29,7 @@ let chickenSizeX = 0;
 let chickenSizeY = 0;
 
 const moveSpeed = 5;
-const jumpPower = 15;
+const jumpPower = 13;
 const gravity = 0.6;
 const maxFallSpeed = 15;
 
@@ -45,6 +49,18 @@ const platforms = [
     { x: 2350, y: 450, width: 300, height: 20 },   // Platform 7
     { x: 2750, y: 500, width: 250, height: 20 }    // End platform
 ];
+
+const enemy = {
+    x: 800,
+    y: 330,
+    width: 40,
+    height: 40,
+    speed: 2, 
+    direction: 1,
+    patrolStart: 800,
+    patrolEnd: 1000,
+    element: null
+};
 
 // Keyboard state
 const keys = {};
@@ -70,6 +86,13 @@ function initializeGame() {
         gameContainer.appendChild(platformElement);
         platform.element = platformElement;
     });
+
+    const enemyElement = document.createElement('div');
+    enemyElement.className = 'enemy';
+    enemyElement.style.width = enemy.width = 'px';
+    enemyElement.style.height = enemy.height = 'px';
+    gameContainer.appendChild(enemyElement);
+    enemy.element = enemyElement;
 }
 
 // Keyboard input
