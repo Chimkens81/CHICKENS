@@ -19,6 +19,7 @@ const livesElement = document.getElementById('lives')
 
 let lives = 5;
 let animationFrame;
+let isInvincible = false;
 
 // Player physics
 let chickenX = 100;
@@ -52,13 +53,20 @@ const platforms = [
 
 const enemy = {
     x: 800,
-    y: 330,
+    y: 270,
     width: 40,
     height: 40,
     speed: 2, 
     direction: 1,
     patrolStart: 800,
-    patrolEnd: 1000,
+    patrolEnd: 965,
+    element: null
+};
+const flag = {
+    x: 2850,
+    y: 410,
+    width: 30,
+    height: 60,
     element: null
 };
 
@@ -89,10 +97,87 @@ function initializeGame() {
 
     const enemyElement = document.createElement('div');
     enemyElement.className = 'enemy';
-    enemyElement.style.width = enemy.width = 'px';
-    enemyElement.style.height = enemy.height = 'px';
+    enemyElement.style.width = enemy.width + 'px';
+    enemyElement.style.height = enemy.height + 'px';
     gameContainer.appendChild(enemyElement);
     enemy.element = enemyElement;
+
+    const flagElement = document.createElement('div');
+    flagElement.className = 'flag';
+    flagElement.style.width = flag.width + 'px';
+    flagElement.style.height = flag.height + 'px';
+    flagElement.style.position = 'absolute';
+    flagElement.style.left = (flag.x - cameraX) + 'px';
+    flagElement.style.bottom = (gameContainer.clientHeight - flag.y - flag.height) + 'px';
+    gameContainer.appendChild(flagElement);
+    flag.element = flagElement;
+}
+
+function updateEnemy() {
+    // Move enemy
+    enemy.x += enemy.speed * enemy.direction;
+
+    if (enemy.x >= enemy.patrolEnd) {
+        enemy.direction = -1;
+    } else if (enemy.x <= enemy.patrolStart) {
+        enemy.direction = 1;
+    }
+
+    enemy.element.style.left = (enemy.x - cameraX) + 'px';
+    enemy.element.style.bottom = (600 - enemy.y - enemy.height) + 'px';
+
+    if (!isInvincible && checkEnemyCollision()) {
+        loselife();
+        resetPlayerPosition();
+    }
+}
+
+function updateFlag() {
+    if (!flag.element) return;
+    flag.element.style.left = (flag.x - cameraX) + 'px';
+    flag.element.style.bottom = (gameContainer.clientHeight - flag.y - flag.height) + 'px';
+}
+
+function checkEnemyCollision() {
+    return chickenX + chickenSizeX > enemy.x &&
+    chickenX < enemy.x + enemy.width &&
+    chickenY + chickenSizeY > enemy.y &&
+    chickenY < enemy.y + enemy.height;
+}
+
+function loselife() {
+    lives--;
+    livesElement.textContent = lives;
+
+    isInvincible = true;
+    chicken.style.opacity = 0.5;
+
+    setTimeout(() => {
+        isInvincible = false;
+        chicken.style.opacity = "1";
+    }, 2000);
+    if (lives <= 0) {
+        gameOver();}
+}
+function gameOver() {
+    cancelAnimationFrame(animationFrame);
+    alert("Game Over! Hit 'Okay' to play again.");
+    location.reload();
+}
+
+function checkFlagCollision() {
+    return chickenX + chickenSizeX > flag.x &&
+    chickenX < flag.x + flag.width &&
+    chickenY + chickenSizeY > flag.y &&
+    chickenY < flag.y + flag.height;
+}
+
+function levelComplete() {
+    cancelAnimationFrame(animationFrame);
+    setTimeout(() => {
+        alert('Level Complete!\nLives Left: ' + lives + '\nHit \'Okay\' to play again.');
+        location.reload();
+    }, 100);
 }
 
 // Keyboard input
@@ -215,6 +300,12 @@ function resetPlayerPosition() {
 // Game loop
 function gameLoop() {
     updatePlayer();
+    updateEnemy();
+    updateFlag();
+    if (checkFlagCollision()) {
+        levelComplete();
+        return;
+    }
     
     let animationFrame = requestAnimationFrame(gameLoop);
 }

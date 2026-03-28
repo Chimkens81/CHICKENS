@@ -36,6 +36,14 @@ body {
     display: none;
 }
 
+.enemy{
+    position: absolute;
+    background-color:#333;
+    border: 2px solid #000;
+    border-radius: 5px;
+    z-index: 5;
+}
+
 .chicken{
     position: absolute;
     width: 80px;
@@ -57,6 +65,15 @@ body {
     border: 2px solid #654321;
     border-radius: 5px;
 }
+
+.flag {
+    position: absolute;
+    background: linear-gradient(to bottom, green 0%, #4CAF50 50%, yellow 100%);
+    border: 2px solid #000;
+    border-radius: 3px;
+    z-index: 5;
+}
+
 
 .game-hud {
     position: absolute;
