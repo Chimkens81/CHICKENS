@@ -39,7 +39,7 @@ let cameraX = 0;
 const WORLD_WIDTH = 3000; // Total world size
 
 // Platforms array
-const platforms = [
+const platforms = [[
     { x: 0, y: 500, width: 400, height: 20 },      // Ground platform
     { x: 500, y: 450, width: 200, height: 20 },    // Platform 1
     { x: 800, y: 380, width: 200, height: 20 },    // Platform 2
@@ -49,11 +49,13 @@ const platforms = [
     { x: 2050, y: 350, width: 200, height: 20 },   // Platform 6
     { x: 2350, y: 450, width: 300, height: 20 },   // Platform 7
     { x: 2750, y: 500, width: 250, height: 20 }    // End platform
+],
+[]
 ];
 
 const enemy = {
     x: 800,
-    y: 270,
+    y: 335,
     width: 40,
     height: 40,
     speed: 2, 
@@ -73,6 +75,8 @@ const flag = {
 // Keyboard state
 const keys = {};
 
+let level = 0;
+
 // Initialize game
 function initializeGame() {
     // Set player starting position
@@ -84,7 +88,7 @@ function initializeGame() {
     chickenSizeY = chicken.offsetHeight;
     
     // Create platform elements
-    platforms.forEach(platform => {
+    platforms[level].forEach(platform => {
         const platformElement = document.createElement('div');
         platformElement.className = 'platform';
         platformElement.style.width = platform.width + 'px';
@@ -124,7 +128,7 @@ function updateEnemy() {
     }
 
     enemy.element.style.left = (enemy.x - cameraX) + 'px';
-    enemy.element.style.bottom = (600 - enemy.y - enemy.height) + 'px';
+    enemy.element.style.bottom = (gameContainer.clientHeight - enemy.y - enemy.height) + 'px';
 
     if (!isInvincible && checkEnemyCollision()) {
         loselife();
@@ -173,11 +177,12 @@ function checkFlagCollision() {
 }
 
 function levelComplete() {
-    cancelAnimationFrame(animationFrame);
-    setTimeout(() => {
-        alert('Level Complete!\nLives Left: ' + lives + '\nHit \'Okay\' to play again.');
-        location.reload();
-    }, 100);
+    // cancelAnimationFrame(animationFrame);
+    // setTimeout(() => {
+        // alert('Level Complete!\nLives Left: ' + lives + '\nHit \'Okay\' to play again.');
+        // location.reload();
+    // }, 100);
+    level++;
 }
 
 // Keyboard input
@@ -197,7 +202,7 @@ document.addEventListener('keyup', function(event) {
 // Check if player is on ground/platform
 function isOnGround() {
     // Check each platform
-    for (let platform of platforms) {
+    for (let platform of platforms[level]) {
         if (chickenX + chickenSizeX > platform.x &&
             chickenX < platform.x + platform.width &&
             chickenY + chickenSizeY >= platform.y - 5 &&
@@ -211,7 +216,7 @@ function isOnGround() {
 
 // Get platform player is standing on
 function getPlatformBelow() {
-    for (let platform of platforms) {
+    for (let platform of platforms[level]) {
         if (chickenX + chickenSizeX > platform.x &&
             chickenX < platform.x + platform.width &&
             chickenY + chickenSizeY >= platform.y - 5 &&
@@ -284,7 +289,7 @@ function updateCamera() {
     }
     
     // Update all platforms relative to camera
-    platforms.forEach(platform => {
+    platforms[level].forEach(platform => {
         platform.element.style.left = (platform.x - cameraX) + 'px';
     });
 }

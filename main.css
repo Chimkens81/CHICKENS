@@ -46,8 +46,8 @@ body {
 
 .chicken{
     position: absolute;
-    width: 80px;
-    height: 80px;
+    width: 47px;
+    height: 42px;
     background-image: url(assets/Chimken-removebg_128x76.png);
     background-size: cover;
     background-position: center;
