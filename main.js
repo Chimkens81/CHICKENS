@@ -36,7 +36,7 @@ const maxFallSpeed = 15;
 
 // Camera/scroll
 let cameraX = 0;
-const WORLD_WIDTH = 3000; // Total world size
+const WORLD_WIDTH = 4000; // Total world size
 
 // Platforms array
 const platforms = [[
@@ -48,9 +48,13 @@ const platforms = [[
     { x: 1700, y: 420, width: 250, height: 20 },   // Platform 5
     { x: 2050, y: 350, width: 200, height: 20 },   // Platform 6
     { x: 2350, y: 450, width: 300, height: 20 },   // Platform 7
-    { x: 2750, y: 500, width: 250, height: 20 }    // End platform
+    { x: 2750, y: 500, width: 1250, height: 20 }    // End platform
 ],
-[]
+[
+    { x: 0, y: 500, width: 200, height: 20},
+    { x: 50, y: 375, width: 250, height: 20},
+    { x: 650, y: 300, width: 300, height: 20}
+]
 ];
 
 const enemy = {
@@ -182,7 +186,15 @@ function levelComplete() {
         // alert('Level Complete!\nLives Left: ' + lives + '\nHit \'Okay\' to play again.');
         // location.reload();
     // }, 100);
+    platforms[level].forEach(platform => {
+    gameContainer.removeChild(platform.element);
+    
+    });
+    gameContainer.removeChild(enemy.element);
+    gameContainer.removeChild(flag.element);
     level++;
+    initializeGame();
+    resetPlayerPosition();
 }
 
 // Keyboard input
@@ -214,6 +226,19 @@ function isOnGround() {
     return false;
 }
 
+function sideCollision() {
+    for (let platform of platforms[level]) {
+        if (chickenX + chickenSizeX > platform.x &&
+            chickenX < platform.x + platform.width &&
+            chickenY + chickenSizeY >= platform.y &&
+            chickenY <= platform.y + platform.height
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Get platform player is standing on
 function getPlatformBelow() {
     for (let platform of platforms[level]) {
@@ -232,10 +257,10 @@ function getPlatformBelow() {
 function updatePlayer() {
     // Horizontal movement
     moveSpeedX = 0;
-    if (keys['a'] || keys['arrowleft']) {
+    if (keys['a'] || keys['arrowleft'] && sideCollision()) {
         moveSpeedX = -moveSpeed;
     }
-    if (keys['d'] || keys['arrowright']) {
+    if (keys['d'] || keys['arrowright'] && sideCollision()) {
         moveSpeedX = moveSpeed;
     }
     
@@ -309,7 +334,6 @@ function gameLoop() {
     updateFlag();
     if (checkFlagCollision()) {
         levelComplete();
-        return;
     }
     
     let animationFrame = requestAnimationFrame(gameLoop);
