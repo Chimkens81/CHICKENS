@@ -40,20 +40,20 @@ const WORLD_WIDTH = 4000; // Total world size
 
 // Platforms array
 const platforms = [[
-    { x: 0, y: 500, width: 400, height: 20 },      // Ground platform
-    { x: 500, y: 450, width: 200, height: 20 },    // Platform 1
-    { x: 800, y: 380, width: 200, height: 20 },    // Platform 2
-    { x: 1100, y: 450, width: 200, height: 20 },   // Platform 3
-    { x: 1400, y: 350, width: 200, height: 20 },   // Platform 4
-    { x: 1700, y: 420, width: 250, height: 20 },   // Platform 5
-    { x: 2050, y: 350, width: 200, height: 20 },   // Platform 6
-    { x: 2350, y: 450, width: 300, height: 20 },   // Platform 7
-    { x: 2750, y: 500, width: 1250, height: 20 }    // End platform
+    { x: 0, y: 500, width: 400, height: 20, solid: true },      // Ground platform
+    { x: 500, y: 450, width: 200, height: 20, solid: true },    // Platform 1
+    { x: 800, y: 380, width: 200, height: 20, solid: true },    // Platform 2
+    { x: 1100, y: 450, width: 200, height: 20, solid: true },   // Platform 3
+    { x: 1400, y: 350, width: 200, height: 20, solid: true },   // Platform 4
+    { x: 1700, y: 420, width: 250, height: 20, solid: true },   // Platform 5
+    { x: 2050, y: 350, width: 200, height: 20, solid: true },   // Platform 6
+    { x: 2350, y: 450, width: 300, height: 20, solid: true },   // Platform 7
+    { x: 2750, y: 500, width: 1250, height: 20, solid: true }    // End platform
 ],
 [
-    { x: 0, y: 500, width: 200, height: 20},
-    { x: 50, y: 375, width: 250, height: 20},
-    { x: 650, y: 300, width: 300, height: 20}
+    { x: 0, y: 500, width: 200, height: 20, solid: true},
+    { x: 50, y: 380, width: 250, height: 20, solid: true},
+    { x: 650, y: 300, width: 300, height: 20, solid: true}
 ]
 ];
 
@@ -220,8 +220,15 @@ function isOnGround() {
             chickenY + chickenSizeY >= platform.y - 5 &&
             chickenY + chickenSizeY <= platform.y + 5 &&
             moveSpeedY >= 0) {
-            return true;
+            if (!platform.solid) {
+                if (chickenY + chickenSizeY - moveSpeedY <= platform.y) {
+                    return true;
+                }
+            } else{
+                return true;
+            }
         }
+        
     }
     return false;
 }
@@ -247,7 +254,13 @@ function getPlatformBelow() {
             chickenY + chickenSizeY >= platform.y - 5 &&
             chickenY + chickenSizeY <= platform.y + 10 &&
             moveSpeedY >= 0) {
-            return platform;
+                if (!platform.solid) {
+                    if (chickenY + chickenSizeY - moveSpeedY <= platform.y) {
+                        return platform;
+                    }
+                } else {
+                    return platform;
+            }
         }
     }
     return null;
@@ -281,6 +294,12 @@ function updatePlayer() {
     if (platformBelow) {
         chickenY = platformBelow.y - chickenSizeY;
         moveSpeedY = 0;
+    }
+    for (let platform of platforms[level]) {
+        if (platform.solid && chickenX + chickenSizeX > platform.x && chickenX < platform.x + platform.width && chickenY < platform.y + platform.height && chickenY > platform.y && moveSpeedY < 0){
+            chickenY = platform.y + platform.height;
+            moveSpeedY = 0
+        }
     }
     
     // Keep player in world bounds
