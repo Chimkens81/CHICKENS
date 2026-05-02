@@ -14,7 +14,6 @@ document.addEventListener("mousemove", (event) => {
 
 // Get elements
 const gameContainer = document.getElementById("gameContainer");
-const chicken = document.getElementById("chicken");
 const livesElement = document.getElementById('lives')
 
 let lives = 5;
@@ -53,7 +52,7 @@ const platforms = [[
 [
     { x: 0, y: 500, width: 200, height: 20, solid: true},
     { x: 50, y: 380, width: 250, height: 20, solid: true},
-    { x: 650, y: 300, width: 300, height: 20, solid: true}
+    { x: 450, y: 300, width: 300, height: 20, solid: true}
 ]
 ];
 
