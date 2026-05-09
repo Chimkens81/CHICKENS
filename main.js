@@ -56,17 +56,15 @@ const platforms = [[
 ]
 ];
 
-const enemy = {
-    x: 800,
-    y: 335,
-    width: 40,
-    height: 40,
-    speed: 2, 
-    direction: 1,
-    patrolStart: 800,
-    patrolEnd: 965,
-    element: null
-};
+const enemy = [[
+    { x: 800, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null }
+],
+[
+    { x: 800, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null },
+    { x: 1000, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 1000, patrolEnd: 1200, element: null }
+]
+];
+
 const flag = {
     x: 2850,
     y: 410,
@@ -100,14 +98,17 @@ function initializeGame() {
         platformElement.style.bottom = (gameContainer.clientHeight - platform.y - platform.height) + 'px';
         gameContainer.appendChild(platformElement);
         platform.element = platformElement;
-    });
 
+    });
+    enemy[level].forEach(currentEnemy => {
     const enemyElement = document.createElement('div');
     enemyElement.className = 'enemy';
-    enemyElement.style.width = enemy.width + 'px';
-    enemyElement.style.height = enemy.height + 'px';
+    enemyElement.style.width = currentEnemy.width + 'px';
+    enemyElement.style.height = currentEnemy.height + 'px';
     gameContainer.appendChild(enemyElement);
-    enemy.element = enemyElement;
+    currentEnemy.element = enemyElement;
+    })
+
 
     const flagElement = document.createElement('div');
     flagElement.className = 'flag';
@@ -121,22 +122,22 @@ function initializeGame() {
 }
 
 function updateEnemy() {
+    enemy[level].forEach(currentEnemy => {
+
     // Move enemy
-    enemy.x += enemy.speed * enemy.direction;
+    currentEnemy.x += currentEnemy.speed * currentEnemy.direction;
 
-    if (enemy.x >= enemy.patrolEnd) {
-        enemy.direction = -1;
-    } else if (enemy.x <= enemy.patrolStart) {
-        enemy.direction = 1;
+    if (currentEnemy.x >= currentEnemy.patrolEnd) {
+        currentEnemy.direction = -1;
+    } else if (currentEnemy.x <= currentEnemy.patrolStart) {
+        currentEnemy.direction = 1;
     }
 
-    enemy.element.style.left = (enemy.x - cameraX) + 'px';
-    enemy.element.style.bottom = (gameContainer.clientHeight - enemy.y - enemy.height) + 'px';
+    currentEnemy.element.style.left = (currentEnemy.x - cameraX) + 'px';
+    currentEnemy.element.style.bottom = (gameContainer.clientHeight - currentEnemy.y - currentEnemy.height) + 'px';
 
-    if (!isInvincible && checkEnemyCollision()) {
-        loselife();
-        resetPlayerPosition();
-    }
+    });
+    
 }
 
 function updateFlag() {
@@ -146,10 +147,17 @@ function updateFlag() {
 }
 
 function checkEnemyCollision() {
-    return chickenX + chickenSizeX > enemy.x &&
-    chickenX < enemy.x + enemy.width &&
-    chickenY + chickenSizeY > enemy.y &&
-    chickenY < enemy.y + enemy.height;
+    for (let currentEnemy of enemy[level]) {
+        if (chickenX + chickenSizeX > currentEnemy.x &&
+        chickenX < currentEnemy.x + currentEnemy.width &&
+        chickenY + chickenSizeY > currentEnemy.y &&
+        chickenY < currentEnemy.y + currentEnemy.height) 
+        {
+            console.log("Hello");
+            return true;
+        }
+    };
+    return false;
 }
 
 function loselife() {
@@ -159,6 +167,7 @@ function loselife() {
     isInvincible = true;
     chicken.style.opacity = 0.5;
 
+    console.log("loselife?");
     setTimeout(() => {
         isInvincible = false;
         chicken.style.opacity = "1";
@@ -189,7 +198,9 @@ function levelComplete() {
     gameContainer.removeChild(platform.element);
     
     });
-    gameContainer.removeChild(enemy.element);
+    enemy[level].forEach(currentEnemy => {
+    gameContainer.removeChild(currentEnemy.element);
+    });
     gameContainer.removeChild(flag.element);
     level++;
     initializeGame();
@@ -316,6 +327,12 @@ function updatePlayer() {
     // Update player element position
     chicken.style.left = (chickenX - cameraX) + 'px';
     chicken.style.bottom = (gameContainer.clientHeight - chickenY - chickenSizeY) + 'px';
+
+    if (!isInvincible && checkEnemyCollision()) {
+        loselife();
+        resetPlayerPosition();
+        console.log("if");
+    }
 }
 
 // Update camera to follow player
