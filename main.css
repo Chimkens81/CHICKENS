@@ -88,6 +88,13 @@ body {
     z-index: 100;
 }
 
+.ui{
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
 .lives{
     background-color: rgba(255, 255, 255, 0.8);
     padding: 10px 20px;

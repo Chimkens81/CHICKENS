@@ -215,6 +215,13 @@ document.addEventListener('keydown', function(event) {
     if ((event.key === ' ' || event.key.toLowerCase() === 'w') && isOnGround()) {
         moveSpeedY = -jumpPower;
     }
+
+    if(event.key === 'o') {
+        saveGame();
+    }
+    if(event.key === 'p') {
+        loadGame();
+    }
 });
 
 document.addEventListener('keyup', function(event) {
@@ -372,4 +379,39 @@ function gameLoop() {
     }
     
     let animationFrame = requestAnimationFrame(gameLoop);
+}
+function saveGame() {
+    const gameState = {
+        chickenX: chickenX,
+        chickenY: chickenY,
+        moveSpeedX: moveSpeedX,
+        moveSpeedY: moveSpeedY,
+        lives: lives,
+        cameraX: cameraX,
+        level: level
+    };
+    localStorage.setItem('chickenGameSave', JSON.stringify(gameState));
+}
+function loadGame() {
+    const saveData = localStorage.getItem('chickenGameSave');
+
+    if (!saveData) {
+        console.log('No save data');
+        return false;
+    }
+
+    const gameState = JSON.parse(saveData);
+
+    chickenX = gameState.chickenX;
+    chickenY = gameState.chickenY;
+    moveSpeedX = gameState.moveSpeedX;
+    moveSpeedY = gameState.moveSpeedY;
+    lives = gameState.lives;
+    cameraX = gameState.cameraX;
+    level = gameState.level;
+    
+    livesElement.textContent = lives;
+
+    console.log('Game loaded.');
+    return true;
 }
