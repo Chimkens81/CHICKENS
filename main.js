@@ -1,9 +1,65 @@
+function showStartMenu() {
+    document.getElementById('startMenu').style.display = 'flex';
+    document.getElementById('gameContainer').classList.add('hidden');
+    document.getElementById('mainMenu').classList.remove('hidden');
+}
+function backToMainMenu() {
+    document.getElementById('mainMenu').classList.remove('hidden');
+}
+
+function openMainOptions() {
+    document.getElementById('mainOptionsMenu').showModal();
+}
+
+function closeMainOptions() {
+    document.getElementById('mainOptionsMenu').close();
+}
+
+function exitGame() {
+    window.location.href = 'about:blank';
+}
+
 async function goneClosed() {
     console.log("clucked")
     document.getElementById('startupDialog').close()
     document.getElementById('gameContainer').classList.remove('hidden')
     initializeGame()
     gameLoop()
+}
+
+function startGame(levelIndex) {
+    if (level < platforms.length) {
+        platforms[level].forEach(platform => {
+            if (platform.element && platform.element.parentNode) {
+                gameContainer.removeChild(platform.element);
+            }
+        });
+        enemy[level].forEach(currentEnemy => {
+            if (currentEnemy.element && currentEnemy.element.parentNode) {
+                gameContainer.removeChild(currentEnemy.element);
+            }
+        });
+        if (flag.element && flag.element.parentNode) {
+            gameContainer.removeChild(flag.element);
+        }
+    }
+
+    level = levelIndex;
+    document.getElementById('startMenu').style.display = 'none';
+    document.getElementById('gameContainer').classList.remove('hidden');
+    document.getElementById('levelNumber').textContent = levelIndex + 1;
+
+    lives = 5;
+    livesElement.textContent = lives;
+    chickenX = 100;
+    chickenY = 400;
+    moveSpeedX = 0;
+    moveSpeedY = 0;
+    cameraX = 0;
+    isInvisible = false;
+
+    initializeGame();
+    gameLoop();
 }
 
 const cursorImage = document.getElementById("cursorImage");
@@ -392,15 +448,33 @@ function saveGame() {
     };
     localStorage.setItem('chickenGameSave', JSON.stringify(gameState));
 }
-function loadGame() {
-    const saveData = localStorage.getItem('chickenGameSave');
+
+function loadGame(slotIndex = 0) {
+    const saveData = localStorage.getItem('chickenGameSave_${slotIndex}');
 
     if (!saveData) {
-        console.log('No save data');
+        console.log('No save data' + slotIndex);
         return false;
     }
 
     const gameState = JSON.parse(saveData);
+    const loadingDifferentLevel = gameState.level !== level;
+
+    if (loadingDifferentLevel) {
+        platforms[level].forEach(platform => {
+            if(platform.element && platform.element.parentNode) {
+                gameContainer.removeChild(platform.element);
+            }
+        });
+        enemy[level].forEach(currentEnemy => {
+            if(currentEnemy.element && currentEnemy.element.parentNode) {
+                gameContainer.removeChild(currentEnemy.element);
+            }
+        });
+        if (flag.element && flag.element.parentNode) {
+            gameContainer.removeChild(flag.element);
+        }
+    }
 
     chickenX = gameState.chickenX;
     chickenY = gameState.chickenY;
@@ -411,7 +485,12 @@ function loadGame() {
     level = gameState.level;
     
     livesElement.textContent = lives;
+    document.getElementById('levelNumber').textContent = level + 1;
 
-    console.log('Game loaded.');
+    if (loadingDifferentLevel) {
+        initializeGame();
+    }
+
+    console.log('Game loaded.' + slotIndex);
     return true;
 }
