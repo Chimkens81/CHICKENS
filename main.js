@@ -97,7 +97,7 @@ const WORLD_WIDTH = 4000; // Total world size
 const platforms = [[
     { x: 0, y: 500, width: 400, height: 20, solid: true },      // Ground platform
     { x: 500, y: 450, width: 200, height: 20, solid: true },    // Platform 1
-    { x: 800, y: 380, width: 200, height: 20, solid: true },    // Platform 2
+    { x: 700, y: 380, width: 350, height: 20, solid: true },    // Platform 2
     { x: 1100, y: 450, width: 200, height: 20, solid: true },   // Platform 3
     { x: 1400, y: 350, width: 200, height: 20, solid: true },   // Platform 4
     { x: 1700, y: 420, width: 250, height: 20, solid: true },   // Platform 5
@@ -113,7 +113,7 @@ const platforms = [[
 ];
 
 const enemy = [[
-    { x: 800, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null }
+    { x: 800, y: 335, width: 150, height: 75, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
 ],
 [
     { x: 800, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null },
