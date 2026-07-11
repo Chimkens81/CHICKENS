@@ -36,6 +36,14 @@ body {
     display: none;
 }
 
+.owlenemy {
+    position: absolute;
+    background-image: url(assets/Diving\ Owl.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 5;
+}
 .enemy{
     position: absolute;
     background-image: url(assets/Normal\ Fox.png);

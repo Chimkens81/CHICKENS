@@ -34,6 +34,11 @@ function startGame(levelIndex) {
                 gameContainer.removeChild(platform.element);
             }
         });
+        (owlenemy[level] || []).forEach(currentOwlEnemy => {
+            if (currentOwlEnemy.element && currentOwlEnemy.element.parentNode) {
+                gameContainer.removeChild(currentOwlEnemy.element);
+            }
+        });
         enemy[level].forEach(currentEnemy => {
             if (currentEnemy.element && currentEnemy.element.parentNode) {
                 gameContainer.removeChild(currentEnemy.element);
@@ -112,8 +117,11 @@ const platforms = [[
 ]
 ];
 
+const owlenemy = [[
+    { x: 1700, y: 100, width: 100, height: 60, element: null}
+]];
 const enemy = [[
-    { x: 800, y: 335, width: 150, height: 75, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
+    { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
 ],
 [
     { x: 800, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null },
@@ -154,8 +162,21 @@ function initializeGame() {
         platformElement.style.bottom = (gameContainer.clientHeight - platform.y - platform.height) + 'px';
         gameContainer.appendChild(platformElement);
         platform.element = platformElement;
-
+    
     });
+
+    (owlenemy[level] || []).forEach(currentOwlEnemy => {
+        const owlEnemyElement = document.createElement('div');
+        owlEnemyElement.className = 'owlenemy';
+        owlEnemyElement.style.width = currentOwlEnemy.width + 'px';
+        owlEnemyElement.style.height = currentOwlEnemy.height + 'px';
+        owlEnemyElement.style.position = 'absolute';
+        owlEnemyElement.style.left = (currentOwlEnemy.x - cameraX) + 'px';
+        owlEnemyElement.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
+        gameContainer.appendChild(owlEnemyElement);
+        currentOwlEnemy.element = owlEnemyElement;
+    })
+
     enemy[level].forEach(currentEnemy => {
     const enemyElement = document.createElement('div');
     enemyElement.className = 'enemy';
@@ -175,6 +196,14 @@ function initializeGame() {
     flagElement.style.bottom = (gameContainer.clientHeight - flag.y - flag.height) + 'px';
     gameContainer.appendChild(flagElement);
     flag.element = flagElement;
+}
+
+function updateOwlEnemy() {
+    (owlenemy[level] || []).forEach(currentOwlEnemy => {
+        if (!currentOwlEnemy.element) return;
+        currentOwlEnemy.element.style.left = (currentOwlEnemy.x - cameraX) + 'px';
+        currentOwlEnemy.element.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
+    });
 }
 
 function updateEnemy() {
@@ -253,6 +282,11 @@ function levelComplete() {
     platforms[level].forEach(platform => {
     gameContainer.removeChild(platform.element);
     
+    });
+    (owlenemy[level] || []).forEach(currentOwlEnemy => {
+        if (currentOwlEnemy.element && currentOwlEnemy.element.parentNode) {
+            gameContainer.removeChild(currentOwlEnemy.element);
+        }
     });
     enemy[level].forEach(currentEnemy => {
     gameContainer.removeChild(currentEnemy.element);
@@ -428,15 +462,20 @@ function resetPlayerPosition() {
 // Game loop
 function gameLoop() {
     updatePlayer();
+    updateOwlEnemy();
     updateEnemy();
     updateFlag();
     if (checkFlagCollision()) {
         levelComplete();
     }
     
-    let animationFrame = requestAnimationFrame(gameLoop);
+    animationFrame = requestAnimationFrame(gameLoop);
 }
-function saveGame() {
+function getSaveKey(slotIndex = 0) {
+    return `chickenGameSave_${slotIndex}`;
+}
+
+function saveGame(slotIndex = 0) {
     const gameState = {
         chickenX: chickenX,
         chickenY: chickenY,
@@ -446,11 +485,11 @@ function saveGame() {
         cameraX: cameraX,
         level: level
     };
-    localStorage.setItem('chickenGameSave', JSON.stringify(gameState));
+    localStorage.setItem(getSaveKey(slotIndex), JSON.stringify(gameState));
 }
 
 function loadGame(slotIndex = 0) {
-    const saveData = localStorage.getItem('chickenGameSave_${slotIndex}');
+    const saveData = localStorage.getItem(getSaveKey(slotIndex));
 
     if (!saveData) {
         console.log('No save data' + slotIndex);
@@ -466,6 +505,11 @@ function loadGame(slotIndex = 0) {
                 gameContainer.removeChild(platform.element);
             }
         });
+        owlenemy[level].forEach(currentOwlEnemy => {
+            if(currentOwlEnemy.element && currentOwlEnemy.element.parentNode) {
+                gameContainer.removeChild(currentOwlEnemy.element);
+            }
+            });
         enemy[level].forEach(currentEnemy => {
             if(currentEnemy.element && currentEnemy.element.parentNode) {
                 gameContainer.removeChild(currentEnemy.element);
@@ -484,12 +528,21 @@ function loadGame(slotIndex = 0) {
     cameraX = gameState.cameraX;
     level = gameState.level;
     
+    if (!chickenSizeX || !chickenSizeY) {
+        chickenSizeX = chicken.offsetWidth;
+        chickenSizeY = chicken.offsetHeight;
+    }
+
     livesElement.textContent = lives;
     document.getElementById('levelNumber').textContent = level + 1;
 
     if (loadingDifferentLevel) {
         initializeGame();
     }
+
+    updateCamera();
+    chicken.style.left = (chickenX - cameraX) + 'px';
+    chicken.style.bottom = (gameContainer.clientHeight - chickenY - chickenSizeY) + 'px';
 
     console.log('Game loaded.' + slotIndex);
     return true;
