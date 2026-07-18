@@ -203,6 +203,10 @@ function updateOwlEnemy() {
         if (!currentOwlEnemy.element) return;
         currentOwlEnemy.element.style.left = (currentOwlEnemy.x - cameraX) + 'px';
         currentOwlEnemy.element.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
+
+        if (chickenX + 200 > currentOwlEnemy.x && chickenX - 200 < currentOwlEnemy.x) {
+            
+        }
     });
 }
 
