@@ -118,7 +118,7 @@ const platforms = [[
 ];
 
 const owlenemy = [[
-    { x: 1700, y: 100, width: 100, height: 60, element: null}
+    { x: 1700, y: 100, perchX: 1700, perchY: 100, isPerched: true, swoopProgress: 0, swoopDirection: 1, swoopDuration: 60, swoopSpeed: 0.4, swoopHeight: chickenY, swoopStartX: 1500, swoopEndX: 1500, width: 100, height: 60, element: null}
 ]];
 const enemy = [[
     { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
@@ -204,8 +204,14 @@ function updateOwlEnemy() {
         currentOwlEnemy.element.style.left = (currentOwlEnemy.x - cameraX) + 'px';
         currentOwlEnemy.element.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
 
-        if (chickenX + 200 > currentOwlEnemy.x && chickenX - 200 < currentOwlEnemy.x) {
-            
+        if (chickenX + 200 < currentOwlEnemy.x && chickenX - 200 > currentOwlEnemy.x) {
+            owlenemy.isPerched = false;
+            owlenemy.swoopProgress = 0;
+
+            if (chickenX < owlenemy.perchX) {
+                owlenemy.swoopDirection + -1;
+                owlenemy.swoop
+            }
         }
     });
 }
