@@ -209,9 +209,11 @@ function updateOwlEnemy() {
             owlenemy.swoopProgress = 0;
 
             if (chickenX < owlenemy.perchX) {
-                owlenemy.swoopDirection + -1;
-                owlenemy.swoop
+                owlenemy.swoopDirection = -1;
             }
+        }
+        if (owlenemy.swoopProgress > 0) {
+            owlenemy.y = 4 * owlenemy.swoopHeight * (owlenemy.swoopProgress - .5) ** 2 - owlenemy.swoopHeight
         }
     });
 }
