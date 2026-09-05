@@ -118,7 +118,7 @@ const platforms = [[
 ];
 
 const owlenemy = [[
-    { x: 1700, y: 100, perchX: 1700, perchY: 100, isPerched: true, swoopProgress: 0, swoopDirection: 1, swoopDuration: 60, swoopSpeed: 0.4, swoopHeight: chickenY, swoopStartX: 1500, swoopEndX: 1500, width: 100, height: 60, element: null}
+    { x: 1700, y: 100, perchX: 1700, perchY: 100, isPerched: true, swoopProgress: 0, swoopDirection: 1, swoopDuration: 60, swoopSpeed: 0.4, swoopHeight: chickenY, swoopStartX: 1500, swoopEndX: 1500, hasSwooped: false, width: 100, height: 60, element: null}
 ]];
 const enemy = [[
     { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
@@ -203,17 +203,30 @@ function updateOwlEnemy() {
         if (!currentOwlEnemy.element) return;
         currentOwlEnemy.element.style.left = (currentOwlEnemy.x - cameraX) + 'px';
         currentOwlEnemy.element.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
+        const chickenIsLeft = chickenX < currentOwlEnemy.perchX;
+        const distanceToChicken = currentOwlEnemy.perchX - chickenX;
+        if (!currentOwlEnemy.hasSwooped && currentOwlEnemy.isPerched && chickenIsLeft && distanceToChicken < 350) {
+            currentOwlEnemy.isPerched = false;
+            currentOwlEnemy.swoopProgress = 0;
+            currentOwlEnemy.swoopStartX = currentOwlEnemy.perchX;
+            currentOwlEnemy.swoopEndX = chickenX;
+            currentOwlEnemy.swoopHeight = Math.max(chickenY, currentOwlEnemy.perchY + 120)
+        }
 
+        if (!currentOwlEnemy.isPerched) {
+            currentOwlEnemy.swoopProgress += currentOwlEnemy.swoopDirection / currentOwlEnemy.swoopDuration;
+            const progress = Math.max(0, Math.min(currentOwlEnemy.swoopProgress, 1))
+        }
         if (chickenX + 200 < currentOwlEnemy.x && chickenX - 200 > currentOwlEnemy.x) {
-            owlenemy.isPerched = false;
-            owlenemy.swoopProgress = 0;
+            currentOwlEnemy.isPerched = false;
+            currentOwlEnemy.swoopProgress = 0;
 
-            if (chickenX < owlenemy.perchX) {
-                owlenemy.swoopDirection = -1;
+            if (chickenX < currentOwlEnemy.perchX) {
+                currentOwlEnemy.swoopDirection = -1;
             }
         }
-        if (owlenemy.swoopProgress > 0) {
-            owlenemy.y = 4 * owlenemy.swoopHeight * (owlenemy.swoopProgress - .5) ** 2 - owlenemy.swoopHeight
+        if (currentOwlEnemy.swoopProgress > 0) {
+            currentOwlEnemy.y = 4 * currentOwlEnemy.swoopHeight * (currentOwlEnemy.swoopProgress - .5) ** 2 - currentOwlEnemy.swoopHeight
         }
     });
 }
@@ -249,6 +262,20 @@ function checkEnemyCollision() {
         chickenX < currentEnemy.x + currentEnemy.width &&
         chickenY + chickenSizeY > currentEnemy.y &&
         chickenY < currentEnemy.y + currentEnemy.height) 
+        {
+            console.log("Hello");
+            return true;
+        }
+    };
+    return false;
+}
+
+function checkOwlEnemyCollision() {
+    for (let currentOwlEnemy of owlenemy[level]) {
+        if (chickenX + chickenSizeX > currentOwlEnemy.x &&
+        chickenX < currentOwlEnemy.x + currentOwlEnemy.width &&
+        chickenY + chickenSizeY > currentOwlEnemy.y &&
+        chickenY < currentOwlEnemy.y + currentOwlEnemy.height) 
         {
             console.log("Hello");
             return true;
@@ -437,7 +464,7 @@ function updatePlayer() {
     chicken.style.left = (chickenX - cameraX) + 'px';
     chicken.style.bottom = (gameContainer.clientHeight - chickenY - chickenSizeY) + 'px';
 
-    if (!isInvincible && checkEnemyCollision()) {
+    if (!isInvincible && (checkEnemyCollision() || checkOwlEnemyCollision())) {
         loselife();
         resetPlayerPosition();
         console.log("if");
