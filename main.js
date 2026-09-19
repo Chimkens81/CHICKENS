@@ -119,7 +119,11 @@ const platforms = [[
 
 const owlenemy = [[
     { x: 1700, y: 100, perchX: 1700, perchY: 100, isPerched: true, swoopProgress: 0, swoopDirection: 1, swoopDuration: 60, swoopSpeed: 0.4, swoopHeight: chickenY, swoopStartX: 1500, swoopEndX: 1500, hasSwooped: false, width: 100, height: 60, element: null}
-]];
+],
+[
+
+]
+];
 const enemy = [[
     { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
 ],
@@ -178,12 +182,12 @@ function initializeGame() {
     })
 
     enemy[level].forEach(currentEnemy => {
-    const enemyElement = document.createElement('div');
-    enemyElement.className = 'enemy';
-    enemyElement.style.width = currentEnemy.width + 'px';
-    enemyElement.style.height = currentEnemy.height + 'px';
-    gameContainer.appendChild(enemyElement);
-    currentEnemy.element = enemyElement;
+        const enemyElement = document.createElement('div');
+        enemyElement.className = 'enemy';
+        enemyElement.style.width = currentEnemy.width + 'px';
+        enemyElement.style.height = currentEnemy.height + 'px';
+        gameContainer.appendChild(enemyElement);
+        currentEnemy.element = enemyElement;
     })
 
 
@@ -204,8 +208,9 @@ function updateOwlEnemy() {
         currentOwlEnemy.element.style.left = (currentOwlEnemy.x - cameraX) + 'px';
         currentOwlEnemy.element.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
         const chickenIsLeft = chickenX < currentOwlEnemy.perchX;
-        const distanceToChicken = currentOwlEnemy.perchX - chickenX;
-        if (currentOwlEnemy.isPerched && chickenIsLeft && distanceToChicken < 350) {
+        const chickenIsRight = chickenX > currentOwlEnemy.perchX;
+        const distanceToChicken = Math.abs(currentOwlEnemy.perchX - chickenX);
+        if (currentOwlEnemy.isPerched && (chickenIsLeft || chickenIsRight) && distanceToChicken < 350) {
             console.log("OwlEnemy")
             currentOwlEnemy.isPerched = false;
             currentOwlEnemy.swoopProgress = 0;
