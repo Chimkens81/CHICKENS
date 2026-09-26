@@ -128,8 +128,8 @@ const enemy = [[
     { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
 ],
 [
-    { x: 800, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null },
-    { x: 1000, y: 335, width: 40, height: 40, speed: 2, direction: 1, patrolStart: 1000, patrolEnd: 1200, element: null }
+    { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null },
+    { x: 1000, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 1000, patrolEnd: 1200, element: null }
 ]
 ];
 
@@ -188,6 +188,11 @@ function initializeGame() {
         enemyElement.style.height = currentEnemy.height + 'px';
         gameContainer.appendChild(enemyElement);
         currentEnemy.element = enemyElement;
+        if (currentEnemy.direction == -1) {
+            enemyElement.classList.add("reverse");
+        } else {
+            enemyElement.classList.remove("reverse");
+        }
     })
 
 
@@ -435,9 +440,11 @@ function updatePlayer() {
     moveSpeedX = 0;
     if (keys['a'] || keys['arrowleft'] && sideCollision()) {
         moveSpeedX = -moveSpeed;
+        document.getElementById("chicken").classList.add("reverse");
     }
     if (keys['d'] || keys['arrowright'] && sideCollision()) {
         moveSpeedX = moveSpeed;
+        document.getElementById("chicken").classList.remove("reverse");
     }
     
     // Apply horizontal movement

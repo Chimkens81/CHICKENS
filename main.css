@@ -63,6 +63,11 @@ body {
     z-index: 10;
 }
 
+.reverse{
+    transform:scaleX(-1);
+    -webkit-transform: scaleX(-1);
+}
+
 .test { 
     pointer-events: auto;
     cursor: url(assets/chicken-foot-claws-vector-sketch-isolated-chicken-foot-claws-vector-sketch-isolated-black-110325325-removebg-preview.png) 0 0, auto !important;
