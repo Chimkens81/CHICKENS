@@ -113,7 +113,9 @@ const platforms = [[
 [
     { x: 0, y: 500, width: 200, height: 20, solid: true},
     { x: 50, y: 380, width: 250, height: 20, solid: true},
-    { x: 450, y: 300, width: 300, height: 20, solid: true}
+    { x: 450, y: 300, width: 300, height: 20, solid: true},
+    { x: 790, y: 390, width: 530, height: 20, solid: true},
+    { x: 1400, y: 350, width: 120, height: 20, solid: true}
 ]
 ];
 
@@ -129,7 +131,7 @@ const enemy = [[
 ],
 [
     { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 800, patrolEnd: 965, element: null },
-    { x: 1000, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 1000, patrolEnd: 1200, element: null }
+    { x: 1000, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 1100, patrolEnd: 1200, element: null }
 ]
 ];
 
@@ -183,7 +185,7 @@ function initializeGame() {
 
     enemy[level].forEach(currentEnemy => {
         const enemyElement = document.createElement('div');
-        enemyElement.className = 'enemy';
+        enemyElement.classList.add("enemy");
         enemyElement.style.width = currentEnemy.width + 'px';
         enemyElement.style.height = currentEnemy.height + 'px';
         gameContainer.appendChild(enemyElement);
@@ -248,6 +250,9 @@ function updateOwlEnemy() {
             // currentOwlEnemy.hasSwooped = true;
         }
         }
+        const movingLeft = !currentOwlEnemy.isPerched &&
+            (currentOwlEnemy.swoopEndX - currentOwlEnemy.swoopStartX) * currentOwlEnemy.swoopDirection < 0;
+        currentOwlEnemy.element.classList.toggle('reverse', movingLeft);
         currentOwlEnemy.element.style.left = (currentOwlEnemy.x - cameraX) + 'px';
         currentOwlEnemy.element.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
     });
@@ -264,7 +269,7 @@ function updateEnemy() {
     } else if (currentEnemy.x <= currentEnemy.patrolStart) {
         currentEnemy.direction = 1;
     }
-
+    currentEnemy.element.classList.toggle('reverse', currentEnemy.direction === -1);
     currentEnemy.element.style.left = (currentEnemy.x - cameraX) + 'px';
     currentEnemy.element.style.bottom = (gameContainer.clientHeight - currentEnemy.y - currentEnemy.height) + 'px';
 
