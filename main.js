@@ -115,7 +115,10 @@ const platforms = [[
     { x: 50, y: 380, width: 250, height: 20, solid: true},
     { x: 450, y: 300, width: 300, height: 20, solid: true},
     { x: 790, y: 390, width: 530, height: 20, solid: true},
-    { x: 1400, y: 350, width: 120, height: 20, solid: true}
+    { x: 1400, y: 350, width: 120, height: 20, solid: true},
+    { x: 1800, y: 550, width: 200, height: 20, solid: true},
+    { x: 2150, y: 500, width: 350, height: 20, solid: true},
+    { x: 2550, y: 400, width: 100, height: 20, solid: true}
 ]
 ];
 
@@ -358,9 +361,19 @@ function levelComplete() {
     gameContainer.removeChild(currentEnemy.element);
     });
     gameContainer.removeChild(flag.element);
+    if (level === platforms.length - 1) {
+        cancelAnimationFrame(animationFrame);
+        alert("Game complete! Congrats! \n Thanks for playing, updates will come!");
+        return;
+    }
     level++;
     initializeGame();
     resetPlayerPosition();
+}
+function gameOver() {
+    cancelAnimationFrame(animationFrame);
+    alert("Game Over! Hit 'Okay' to play again.");
+    location.reload();
 }
 
 // Keyboard input
