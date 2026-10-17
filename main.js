@@ -123,7 +123,7 @@ const platforms = [[
 ];
 
 const owlenemy = [[
-    { x: 1700, y: 100, perchX: 1700, perchY: 100, isPerched: true, swoopProgress: 0, swoopDirection: 1, swoopDuration: 60, swoopSpeed: 0.4, swoopHeight: chickenY, swoopStartX: 1500, swoopEndX: 1500, hasSwooped: false, width: 100, height: 60, element: null}
+    { x: 1700, y: 100, perchX: 1700, perchY: 100, isPerched: true, swoopProgress: 0, swoopDirection: 1, swoopDuration: 60, swoopSpeed: 0.4, swoopHeight: chickenY, swoopStartX: 1500, swoopEndX: 1500, hasSwooped: false, width: 150, height: 80, element: null}
 ],
 [
 
@@ -177,8 +177,13 @@ function initializeGame() {
     (owlenemy[level] || []).forEach(currentOwlEnemy => {
         const owlEnemyElement = document.createElement('div');
         owlEnemyElement.className = 'owlenemy';
+        if (currentOwlEnemy.isPerched) {
+        owlEnemyElement.style.width = (currentOwlEnemy.width / 1.25) + 'px';
+        owlEnemyElement.style.height = (currentOwlEnemy.height / 1.25) + 'px';
+        } else {
         owlEnemyElement.style.width = currentOwlEnemy.width + 'px';
         owlEnemyElement.style.height = currentOwlEnemy.height + 'px';
+        }
         owlEnemyElement.style.position = 'absolute';
         owlEnemyElement.style.left = (currentOwlEnemy.x - cameraX) + 'px';
         owlEnemyElement.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
@@ -228,6 +233,11 @@ function updateOwlEnemy() {
             currentOwlEnemy.swoopEndX = chickenX;
             currentOwlEnemy.swoopHeight = Math.max(chickenY, currentOwlEnemy.perchY + 120)
         }
+        if (currentOwlEnemy.isPerched) {
+            currentOwlEnemy.element.classList.add('owlperched');
+        } else {
+            currentOwlEnemy.element.classList.remove('owlperched');
+        }
 
         if (!currentOwlEnemy.isPerched) {
             currentOwlEnemy.swoopProgress += currentOwlEnemy.swoopDirection / currentOwlEnemy.swoopDuration;
@@ -238,7 +248,6 @@ function updateOwlEnemy() {
             (currentOwlEnemy.swoopEndX - currentOwlEnemy.swoopStartX) * progress ** 2;
             currentOwlEnemy.y = currentOwlEnemy.perchY +
             (currentOwlEnemy.swoopHeight - currentOwlEnemy.perchY) * progress;
-
         if (currentOwlEnemy.swoopDirection === 1 && progress === 1) {
             currentOwlEnemy.swoopDirection = -1;
             currentOwlEnemy.swoopDuration = 90;

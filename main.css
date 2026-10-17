@@ -38,11 +38,14 @@ body {
 
 .owlenemy {
     position: absolute;
-    background-image: url(assets/Diving\ Owl.png);
+    background-image: url(assets/Diving\ Owl2.png);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     z-index: 5;
+}
+.owlperched {
+    background-image: url(assets/Stationary\ Owl.png);
 }
 .enemy{
     position: absolute;
