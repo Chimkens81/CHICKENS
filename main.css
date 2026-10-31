@@ -55,6 +55,15 @@ body {
     background-position: center;
     z-index: 5;
 }
+.character{
+    position: absolute;
+    background-image: url(assets/Silkie\ Chicken.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 5;
+
+}
 
 .chicken{
     position: absolute;

@@ -129,6 +129,13 @@ const owlenemy = [[
 
 ]
 ];
+const character = [[
+    { x: 3700, y: 450, width: 100, height: 60, element: null}
+],
+[
+
+]
+];
 const enemy = [[
     { x: 800, y: 335, width: 100, height: 60, speed: 2, direction: 1, patrolStart: 700, patrolEnd: 965, element: null }
 ],
@@ -189,6 +196,18 @@ function initializeGame() {
         owlEnemyElement.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
         gameContainer.appendChild(owlEnemyElement);
         currentOwlEnemy.element = owlEnemyElement;
+    })
+
+    character[level].forEach(currentCharacter => {
+        const characterElement = document.createElement('div');
+        characterElement.className = 'character';
+        characterElement.style.width = currentCharacter.width + 'px';
+        characterElement.style.height = currentCharacter.height + 'px';
+        characterElement.style.position = 'absolute';
+        characterElement.style.left = (currentCharacter.x - cameraX) + 'px';
+        characterElement.style.bottom = (gameContainer.clientHeight - currentCharacter.y - currentCharacter.height) + 'px';
+        gameContainer.appendChild(characterElement);
+        currentCharacter.element = characterElement;
     })
 
     enemy[level].forEach(currentEnemy => {
@@ -267,6 +286,12 @@ function updateOwlEnemy() {
         currentOwlEnemy.element.classList.toggle('reverse', movingLeft);
         currentOwlEnemy.element.style.left = (currentOwlEnemy.x - cameraX) + 'px';
         currentOwlEnemy.element.style.bottom = (gameContainer.clientHeight - currentOwlEnemy.y - currentOwlEnemy.height) + 'px';
+    });
+}
+function updateCharacter() {
+    character[level].forEach(currentCharacter => {
+    currentCharacter.element.style.left = (currentCharacter.x - cameraX) + 'px';
+    currentCharacter.element.style.bottom = (gameContainer.clientHeight - currentCharacter.y - currentCharacter.height) + 'px';
     });
 }
 
@@ -564,6 +589,7 @@ function gameLoop() {
     updateOwlEnemy();
     updateEnemy();
     updateFlag();
+    updateCharacter();
     if (checkFlagCollision()) {
         levelComplete();
     }
