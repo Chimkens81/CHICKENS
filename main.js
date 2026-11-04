@@ -77,6 +77,7 @@ document.addEventListener("mousemove", (event) => {
 const gameContainer = document.getElementById("gameContainer");
 const livesElement = document.getElementById('lives')
 
+let characterText = "";
 let lives = 5;
 let animationFrame;
 let isInvincible = false;
@@ -130,7 +131,7 @@ const owlenemy = [[
 ]
 ];
 const character = [[
-    { x: 3700, y: 450, width: 100, height: 60, element: null}
+    { x: 3700, y: 450, width: 60, height: 60, element: null}
 ],
 [
 
@@ -292,6 +293,7 @@ function updateCharacter() {
     character[level].forEach(currentCharacter => {
     currentCharacter.element.style.left = (currentCharacter.x - cameraX) + 'px';
     currentCharacter.element.style.bottom = (gameContainer.clientHeight - currentCharacter.y - currentCharacter.height) + 'px';
+    
     });
 }
 
@@ -326,6 +328,19 @@ function checkEnemyCollision() {
         chickenX < currentEnemy.x + currentEnemy.width &&
         chickenY + chickenSizeY > currentEnemy.y &&
         chickenY < currentEnemy.y + currentEnemy.height) 
+        {
+            console.log("Hello");
+            return true;
+        }
+    };
+    return false;
+}
+function checkCharacterCollision() {
+    for (let currentCharacter of character[level])  {
+        if (chickenX + chickenSizeX > currentCharacter.x &&
+        chickenX < currentCharacter.x + currentCharacter.width &&
+        chickenY + chickenSizeY > currentCharacter.y &&
+        chickenY < currentCharacter.y + currentCharacter.height) 
         {
             console.log("Hello");
             return true;
@@ -415,8 +430,10 @@ document.addEventListener('keydown', function(event) {
     keys[event.key.toLowerCase()] = true;
     
     // Jump with spacebar or W
-    if ((event.key === ' ' || event.key.toLowerCase() === 'w') && isOnGround()) {
-        moveSpeedY = -jumpPower;
+    if(!checkCharacterCollision())    {
+        if ((event.key === ' ' || event.key.toLowerCase() === 'w') && isOnGround()) {
+            moveSpeedY = -jumpPower;
+        }
     }
 
     if(event.key === 'o') {
@@ -488,15 +505,18 @@ function getPlatformBelow() {
 
 // Update player physics
 function updatePlayer() {
-    // Horizontal movement
+    // Horizontal movementlives
     moveSpeedX = 0;
-    if (keys['a'] || keys['arrowleft'] && sideCollision()) {
-        moveSpeedX = -moveSpeed;
-        document.getElementById("chicken").classList.add("reverse");
-    }
-    if (keys['d'] || keys['arrowright'] && sideCollision()) {
-        moveSpeedX = moveSpeed;
-        document.getElementById("chicken").classList.remove("reverse");
+    if (!checkCharacterCollision())   {
+        if (keys['a'] || keys['arrowleft'] && sideCollision()) {
+            moveSpeedX = -moveSpeed;
+            document.getElementById("chicken").classList.add("reverse");
+        }
+
+        if (keys['d'] || keys['arrowright'] && sideCollision()) {
+            moveSpeedX = moveSpeed;
+            document.getElementById("chicken").classList.remove("reverse");
+        }
     }
     
     // Apply horizontal movement
