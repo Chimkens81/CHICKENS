@@ -54,6 +54,9 @@ function startGame(levelIndex) {
     document.getElementById('gameContainer').classList.remove('hidden');
     document.getElementById('levelNumber').textContent = levelIndex + 1;
 
+    interactions = "";
+    speaking = false;
+    characterTextElement.textContent = "";
     lives = 5;
     livesElement.textContent = lives;
     chickenX = 100;
@@ -76,8 +79,10 @@ document.addEventListener("mousemove", (event) => {
 // Get elements
 const gameContainer = document.getElementById("gameContainer");
 const livesElement = document.getElementById('lives')
+const characterTextElement = document.getElementById('characterText');
 
-let characterText = "";
+let interactions = "";
+let speaking = false;
 let lives = 5;
 let animationFrame;
 let isInvincible = false;
@@ -291,9 +296,40 @@ function updateOwlEnemy() {
 }
 function updateCharacter() {
     character[level].forEach(currentCharacter => {
-    currentCharacter.element.style.left = (currentCharacter.x - cameraX) + 'px';
-    currentCharacter.element.style.bottom = (gameContainer.clientHeight - currentCharacter.y - currentCharacter.height) + 'px';
-    
+        currentCharacter.element.style.left = (currentCharacter.x - cameraX) + 'px';
+        currentCharacter.element.style.bottom = (gameContainer.clientHeight - currentCharacter.y - currentCharacter.height) + 'px';
+
+        if (speaking || interactions.includes("silkie") || !checkCharacterCollision()) {
+            return;
+        }
+
+        interactions += "silkie";
+        speaking = true;
+        const dialogue = [
+            "Hello there.",
+            "I see that you are new here.",
+            "And I see that you've gotten past the owl and the fox.",
+            "Good for you!",
+            "This next section is harder, if you choose to continue.",
+            "Maybe I can be of some assistance?",
+            "Here, take this.",
+            "Hope you make it!"
+        ];
+
+        dialogue.forEach((line, index) => {
+            setTimeout(() => {
+                characterTextElement.textContent = line;
+                if (line === "Here, take this.") {
+                    lives += 2;
+                    livesElement.textContent = lives;
+                }
+            }, index * 2000);
+        });
+
+        setTimeout(() => {
+            characterTextElement.textContent = "";
+            speaking = false;
+        }, dialogue.length * 2000);
     });
 }
 
@@ -507,6 +543,21 @@ function getPlatformBelow() {
 function updatePlayer() {
     // Horizontal movementlives
     moveSpeedX = 0;
+    if (interactions.includes("silkie")) {
+        character[level].forEach(currentCharacter => {
+            if (chickenX + chickenSizeX > currentCharacter.x &&
+                chickenX < currentCharacter.x + currentCharacter.width &&
+                chickenY + chickenSizeY > currentCharacter.y &&
+                chickenY < currentCharacter.y + currentCharacter.height) {
+                const chickenCenter = chickenX + chickenSizeX / 2;
+                const characterCenter = currentCharacter.x + currentCharacter.width / 2;
+                chickenX = chickenCenter < characterCenter
+                    ? currentCharacter.x - chickenSizeX
+                    : currentCharacter.x + currentCharacter.width;
+            }
+        });
+    }
+
     if (!checkCharacterCollision())   {
         if (keys['a'] || keys['arrowleft'] && sideCollision()) {
             moveSpeedX = -moveSpeed;
