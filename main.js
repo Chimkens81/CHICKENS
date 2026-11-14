@@ -80,6 +80,7 @@ document.addEventListener("mousemove", (event) => {
 const gameContainer = document.getElementById("gameContainer");
 const livesElement = document.getElementById('lives')
 const characterTextElement = document.getElementById('characterText');
+const textBox = document.getElementById("textBox");
 
 let interactions = "";
 let speaking = false;
@@ -298,12 +299,20 @@ function updateCharacter() {
     character[level].forEach(currentCharacter => {
         currentCharacter.element.style.left = (currentCharacter.x - cameraX) + 'px';
         currentCharacter.element.style.bottom = (gameContainer.clientHeight - currentCharacter.y - currentCharacter.height) + 'px';
+        if(chickenX < currentCharacter.x) {
+            currentCharacter.element.classList.add('reverse');
+        } else {
+            currentCharacter.element.classList.remove('reverse');
+        }
 
         if (speaking || interactions.includes("silkie") || !checkCharacterCollision()) {
             return;
+        } else {
+            textBox.classList.remove('hide');
         }
-
-        interactions += "silkie";
+        
+        
+        
         speaking = true;
         const dialogue = [
             "Hello there.",
@@ -329,6 +338,7 @@ function updateCharacter() {
         setTimeout(() => {
             characterTextElement.textContent = "";
             speaking = false;
+            interactions += "silkie";
         }, dialogue.length * 2000);
     });
 }
@@ -656,7 +666,11 @@ function resetPlayerPosition() {
 
 // Game loop
 function gameLoop() {
-    updatePlayer();
+    if(!checkCharacterCollision()) {
+        updatePlayer();
+    } else if(interactions.includes("silkie") == true) {
+        updatePlayer();
+    }
     updateOwlEnemy();
     updateEnemy();
     updateFlag();
