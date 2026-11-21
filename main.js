@@ -312,7 +312,6 @@ function updateCharacter() {
         }
         
         
-        
         speaking = true;
         const dialogue = [
             "Hello there.",
